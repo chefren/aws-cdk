@@ -180,6 +180,11 @@ describe('lambda + vpc', () => {
         ToPort: 65535,
       });
     });
+
+    test('Can delete Lambda in VPC', () => {
+      // WHEN
+      delete fn;
+    });
   });
 
   test('lambda without VPC throws Error upon accessing connections', () => {
@@ -322,6 +327,7 @@ describe('lambda + vpc', () => {
       });
     }).toThrow(/Lambda Functions in a public subnet/);
   });
+
 });
 
 class SomethingConnectable implements ec2.IConnectable {
