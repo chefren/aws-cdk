@@ -1,0 +1,14 @@
+FROM jsii/superchain
+# Amazon linux 2 base
+
+# tools
+RUN yum install -y htop
+
+# Copy Code
+WORKDIR /app
+ARG BUILD_ARGS
+COPY . .
+
+# Build takes like 45 mins (@4 cpu 3GB RAM)
+# RUN yarn build --skip-test --no-bail --skip-prereqs --skip-compat
+# Errors !!!!!!!!
