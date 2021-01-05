@@ -181,10 +181,6 @@ describe('lambda + vpc', () => {
       });
     });
 
-    test('Can delete Lambda in VPC', () => {
-      // WHEN
-      delete fn;
-    });
   });
 
   test('lambda without VPC throws Error upon accessing connections', () => {
@@ -326,6 +322,30 @@ describe('lambda + vpc', () => {
         vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       });
     }).toThrow(/Lambda Functions in a public subnet/);
+  });
+
+  test('can create and destroy Lambda in VPC', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    // Create lambda inside scope so it is gone after the scope ends
+    (function() {
+      new lambda.Function(stack, 'VPCLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+        vpc,
+        vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+      });
+      // THEN
+      expect(stack).toCountResources('AWS::Lambda::Function', 1);
+    })();
+
+    // THEN
+    expect(stack).toCountResources('AWS::Lambda::Function', 0);
+
   });
 
 });
